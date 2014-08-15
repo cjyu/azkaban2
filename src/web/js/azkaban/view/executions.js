@@ -56,7 +56,7 @@ $(function() {
   if (window.location.hash) {
     var hash = window.location.hash;
     if (hash == '#recently-finished') {
-      executionsTabView.handleRecentlyFinishedLinkClick();
+      executionsTabView.handleRecentlyFinishedViewLinkClick();
     }
   }
 });
