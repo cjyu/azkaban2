@@ -21,18 +21,11 @@ do
   CLASSPATH=$CLASSPATH:$file
 done
 
-if [ "HADOOP_HOME" != "" ]; then
-        echo "Using Hadoop from $HADOOP_HOME"
-        CLASSPATH=$CLASSPATH:$HADOOP_HOME/conf:$HADOOP_HOME/*
-        JAVA_LIB_PATH="-Djava.library.path=$HADOOP_HOME/lib/native/Linux-amd64-64"
-else
-        echo "Error: HADOOP_HOME is not set. Hadoop job types will not run properly."
-fi
-
-if [ "HIVE_HOME" != "" ]; then
-        echo "Using Hive from $HIVE_HOME"
-        CLASSPATH=$CLASSPATH:$HIVE_HOME/conf:$HIVE_HOME/lib/*
-fi
+HADOOP_LIB_DIR=/usr/lib/hadoop/client
+HADOOP_CONF_DIR=/etc/hadoop/conf
+HADOOP_NATIVE_LIB_DIR=/usr/lib/hadoop/lib/native
+CLASSPATH=$CLASSPATH:$HADOOP_LIB_DIR/*:$HADOOP_CONF_DIR
+JAVA_LIB_PATH="-Djava.library.path=$HADOOP_NATIVE_LIB_DIR"
 
 echo $azkaban_dir;
 echo $CLASSPATH;
@@ -41,11 +34,11 @@ executorport=`cat $azkaban_dir/conf/azkaban.properties | grep executor.port | cu
 serverpath=`pwd`
 
 if [ -z $AZKABAN_OPTS ]; then
-  AZKABAN_OPTS=-Xmx3G
+  AZKABAN_OPTS="-Xmx3G"
 fi
 AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
 
-java $AZKABAN_OPTS -cp $CLASSPATH azkaban.webapp.AzkabanSingleServer -conf $azkaban_dir/conf $@ &
+java $AZKABAN_OPTS $JAVA_LIB_PATH -cp $CLASSPATH azkaban.webapp.AzkabanSingleServer -conf $azkaban_dir/conf $@ &
 
 echo $! > currentpid
 

@@ -32,6 +32,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -255,7 +257,7 @@ public class JobTypeManager
 		try {
 			//first global classpath
 			logger.info("Adding global resources.");
-			List<String> typeGlobalClassPath = sysConf.getStringList("jobtype.global.classpath", null, ",");
+			List<String> typeGlobalClassPath = Utils.expandClassPath(sysConf.getStringList("jobtype.global.classpath", null, ","));
 			if(typeGlobalClassPath != null) {
 				for(String jar : typeGlobalClassPath) {
 					URL cpItem = new File(jar).toURI().toURL();
@@ -268,7 +270,7 @@ public class JobTypeManager
 			
 			//type specific classpath
 			logger.info("Adding type resources.");
-			List<String> typeClassPath = sysConf.getStringList("jobtype.classpath", null, ",");
+			List<String> typeClassPath = Utils.expandClassPath(sysConf.getStringList("jobtype.classpath", null, ","));
 			if(typeClassPath != null) {
 				for(String jar : typeClassPath) {
 					URL cpItem = new File(jar).toURI().toURL();
@@ -278,7 +280,7 @@ public class JobTypeManager
 					}
 				}
 			}			
-			List<String> jobtypeLibDirs = sysConf.getStringList("jobtype.lib.dir", null, ",");
+			List<String> jobtypeLibDirs = Utils.expandClassPath(sysConf.getStringList("jobtype.lib.dir", null, ","));
 			if(jobtypeLibDirs != null) {
 				for(String libDir : jobtypeLibDirs) {
 					for(File f : new File(libDir).listFiles()) {
@@ -402,5 +404,6 @@ public class JobTypeManager
 	public void registerJobType(String typeName, Class<? extends Job> jobTypeClass) {
 		jobToClass.put(typeName, jobTypeClass);
 	}
+
 }
 

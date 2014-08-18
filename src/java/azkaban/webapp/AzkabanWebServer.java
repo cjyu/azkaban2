@@ -1002,7 +1002,7 @@ public class AzkabanWebServer extends AzkabanServer {
 			String pluginJobTypes = pluginProps.getString("viewer.jobtypes", null);
 			int pluginOrder = pluginProps.getInt("viewer.order", 0);
 			boolean pluginHidden = pluginProps.getBoolean("viewer.hidden", false);
-			List<String> extLibClasspath = pluginProps.getStringList("viewer.external.classpaths", (List<String>)null);
+			List<String> extLibClasspath = Utils.expandClassPath(pluginProps.getStringList("viewer.external.classpaths", (List<String>)null));
 			
 			String pluginClass = pluginProps.getString("viewer.servlet.class");
 			if (pluginClass == null) {
@@ -1030,32 +1030,12 @@ public class AzkabanWebServer extends AzkabanServer {
 				// Load any external libraries.
 				if (extLibClasspath != null) {
 					for (String extLib : extLibClasspath) {
-						File extLibFile = new File(pluginDir, extLib);
-						if (extLibFile.exists()) {
-							if (extLibFile.isDirectory()) {
-								// extLibFile is a directory; load all the files in the directory.
-								File[] extLibFiles = extLibFile.listFiles();
-								for (int i=0; i < extLibFiles.length; ++i) {
-									try {
-										URL url = extLibFiles[i].toURI().toURL();
-										urls.add(url);
-									} catch (MalformedURLException e) {
-										logger.error(e);
-									}
-								}
-							}
-							else { // extLibFile is a file
-								try {
-									URL url = extLibFile.toURI().toURL();
-									urls.add(url);
-								} catch (MalformedURLException e) {
-									logger.error(e);
-								}
-							}
-						}
-						else {
-							logger.error("External library path " + extLibFile.getAbsolutePath() + " not found.");
-							continue;
+						try{
+							URL url = new File(extLib).toURI().toURL();
+							urls.add(url);
+							logger.info("adding to classpath " + extLib);
+						} catch (MalformedURLException e) {
+							logger.error(e);
 						}
 					}
 				}

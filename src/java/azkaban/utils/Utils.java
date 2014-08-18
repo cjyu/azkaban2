@@ -27,8 +27,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -389,5 +391,22 @@ public class Utils {
 		}
 
 		return periodStr;
+	}
+	
+	public static List<String> expandClassPath(List<String> dirs) {
+		ArrayList<String> expanded = new ArrayList<String>();
+		if(dirs == null) return expanded;
+		for(String dir : dirs) {
+			File f = new File(dir);
+			if(f.isDirectory()) {
+				expanded.add(f.getAbsolutePath());
+				for(File ef : f.listFiles()) {
+					expanded.add(ef.getAbsolutePath());
+				}
+			} else {
+				expanded.add(f.getAbsolutePath());
+			}
+		}
+		return expanded;
 	}
 }
