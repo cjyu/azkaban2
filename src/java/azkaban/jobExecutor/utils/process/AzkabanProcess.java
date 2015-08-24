@@ -71,6 +71,7 @@ public class AzkabanProcess {
 		ProcessBuilder builder = new ProcessBuilder(cmd);
 		builder.directory(new File(workingDir));
 		builder.environment().putAll(env);
+		builder.redirectErrorStream(true);
 		this.process = builder.start();
 		this.processId = processId(process);
 		if (processId == 0) {
